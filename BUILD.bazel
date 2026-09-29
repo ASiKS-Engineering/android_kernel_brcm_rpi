@@ -1742,6 +1742,11 @@ _RPI_MODULE_OUTS = [
     # keep sorted
 ]
 
+_RPI5_VENDOR_MODULE_OUTS = [
+    # keep sorted
+    "drivers/hailo/hailo_pci.ko",
+]
+
 kernel_build(
     name = "rpi4_defconfig",
     srcs = [":kernel_aarch64_sources"],
@@ -1805,7 +1810,7 @@ kernel_build(
         "dtbs",
     ],
     makefile = ":Makefile",
-    module_outs = get_gki_modules_list("arm64") + get_kunit_modules_list("arm64") + _RPI_MODULE_OUTS,
+    module_outs = get_gki_modules_list("arm64") + get_kunit_modules_list("arm64") + _RPI_MODULE_OUTS + _RPI5_VENDOR_MODULE_OUTS,
     strip_modules = True,
 )
 

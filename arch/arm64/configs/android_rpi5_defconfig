@@ -1859,6 +1859,7 @@ CONFIG_PCIE_BUS_DEFAULT=y
 # CONFIG_PCIE_BUS_PEER2PEER is not set
 # CONFIG_VGA_ARB is not set
 # CONFIG_HOTPLUG_PCI is not set
+CONFIG_HAILO_PCI=m
 
 #
 # PCI controller drivers

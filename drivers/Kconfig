@@ -27,6 +27,8 @@ source "drivers/connector/Kconfig"
 
 source "drivers/firmware/Kconfig"
 
+source "drivers/hailo/Kconfig"
+
 source "drivers/fwctl/Kconfig"
 
 source "drivers/gnss/Kconfig"
