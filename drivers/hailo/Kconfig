@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-2.0
+
+config HAILO_PCI
+	tristate "Hailo PCIe accelerator support"
+	depends on PCI
+	depends on FW_LOADER
+	depends on DMA_SHARED_BUFFER
+	help
+	  Build support for Hailo PCIe AI accelerators such as Hailo-8.
+	  The driver exposes the accelerator over a character device and
+	  loads device firmware through the kernel firmware loader.
+
+	  If built as a module, the module will be named hailo_pci.
