@@ -10,6 +10,9 @@
 #include <drm/drm_fb_helper.h>
 #include <drm/drm_framebuffer.h>
 #include <drm/drm_gem_dma_helper.h>
+#include <linux/linux_logo.h>
+
+extern const struct linux_logo logo_mycompany_clut224;
 
 /*
  * struct fb_ops
@@ -299,6 +302,77 @@ int drm_fbdev_dma_driver_fbdev_probe(struct drm_fb_helper *fb_helper,
 		ret = -ENODEV; /* I/O memory not supported; use generic emulation */
 		goto err_drm_client_buffer_delete;
 	}
+
+        /*
+         * Draw the embedded custom logo into the DRM framebuffer.
+         * The VC4 fbdev client uses RGB565 (16 bpp).
+         */
+        if (map.vaddr) {
+                unsigned int x, y;
+                unsigned int logo_x, logo_y;
+                const struct linux_logo *logo = &logo_mycompany_clut224;
+
+                pr_info("MYLOGO: fb=%ux%u pitch=%u logo=%ux%u clut=%u data=%p clutptr=%p\n",
+                        sizes->surface_width,
+                        sizes->surface_height,
+                        buffer->pitch,
+                        logo->width,
+                        logo->height,
+                        logo->clutsize,
+                        logo->data,
+                        logo->clut);
+
+                pr_info("MYLOGO: data[0]=%u data[1]=%u data[2]=%u "
+                        "clut[0..2]=%u,%u,%u\n",
+                        logo->data[0],
+                        logo->data[1],
+                        logo->data[2],
+                        logo->clut[0],
+                        logo->clut[1],
+                        logo->clut[2]);
+
+                logo_x = (sizes->surface_width > logo->width) ?
+                         (sizes->surface_width - logo->width) / 2 : 0;
+                logo_y = (sizes->surface_height > logo->height) ?
+                         (sizes->surface_height - logo->height) / 2 : 0;
+
+                for (y = 0; y < logo->height; y++) {
+                        u16 *dst;
+
+                if (logo_y + y >= sizes->surface_height)
+                        break;
+
+                dst = (u16 *)((u8 *)map.vaddr +
+                              (logo_y + y) * buffer->pitch);
+
+                for (x = 0; x < logo->width; x++) {
+                        unsigned int index;
+                        unsigned int r, g, b;
+
+                        if (logo_x + x >= sizes->surface_width)
+                                break;
+
+                        index = logo->data[y * logo->width + x];
+
+                        if (index < 32)
+                                continue;
+
+                        index -= 32;
+
+                        if (index >= logo->clutsize)
+                                continue;
+
+                        r = logo->clut[index * 3 + 0];
+                        g = logo->clut[index * 3 + 1];
+                        b = logo->clut[index * 3 + 2];
+
+                        dst[logo_x + x] =
+                                ((r >> 3) << 11) |
+                                ((g >> 2) << 5) |
+                                (b >> 3);
+                }
+            }
+        }
 
 	fb_helper->funcs = &drm_fbdev_dma_helper_funcs;
 	fb_helper->buffer = buffer;

@@ -30,6 +30,13 @@ config LOGO_LINUX_CLUT224
 	bool "Standard 224-color Linux logo"
 	default y
 
+config LOGO_MYCOMPANY_CLUT224
+        bool "Custom MyCompany 224-color Linux logo"
+        default n
+        depends on LOGO
+        help
+          Include the custom MyCompany 224-color Linux logo.
+
 config LOGO_DEC_CLUT224
 	bool "224-color Digital Equipment Corporation Linux logo"
 	depends on MACH_DECSTATION || ALPHA
