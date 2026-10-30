@@ -39,6 +39,9 @@ static void clear_sg_table(struct sg_table *sgt);
 MODULE_IMPORT_NS(DMA_NS_NAME);
 #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0) */
 
+// GKI exports close_fd() only through the VFS-internal namespace.
+MODULE_IMPORT_NS("ANDROID_GKI_VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver");
+
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 220)
 #define close_fd(fd) __close_fd(current->files, fd)
 #endif // LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 220)
